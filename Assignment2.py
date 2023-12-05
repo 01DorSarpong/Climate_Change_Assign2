@@ -64,14 +64,13 @@ df1, df2 = read_data('Climate_Data.csv')
 
 
 # Defining variables for my plots
-
 years = df2.index
 countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'US','Brazil',
              'Argentina', 'India', 'China', 'Kazakhstan','Australia',
              'Russia', 'UK',]
 
 
-# Creating dataframes for all the series
+# Creating dataframes for all the 6 series
 pop = df2.xs('Population, total', level=1, axis = 1)
 CO2 = df2.xs('CO2 emissions (kt)', level=1, axis = 1)
 gdp = df2.xs('GDP (current US$)', level=1, axis = 1)
@@ -82,86 +81,58 @@ renewable_egy = df2.xs('Renewable energy consumption (% of total final energy co
              level=1, axis = 1)
 
 
-print(pop)
-pop_years = pop[::].values
-print(pop_years)
-
-plt.figure(figsize=(12,15))
-
-pop.plot(kind='bar')
 
 """
-plt.bar(countries, pop_years[0], label='1991')
-plt.bar(countries, pop_years[1], label='1992')
-plt.bar(countries, pop_years[2], label='1993')
-plt.bar(countries, pop_years[3], label='1994')
-plt.bar(countries, pop_years[4], label='1995')
-plt.bar(countries, pop_years[5], label='1996')
-plt.bar(countries, pop_years[6], label='1997')
-plt.bar(countries, pop_years[7], label='1998')
-plt.bar(countries, pop_years[8], label='1999')
-plt.bar(countries, pop_years[9], label='2000')
+This part of the code plots different graphs to show the relationships between
+the different series and countries over the years. The first graph is a bar
+plot of the population series for all the countries over every 2 years
+
 """
+
+
+# Bar graph of population for all countries
+pop.T.iloc[:,1::2].plot(kind='bar', figsize=(15,15), width=0.8)
+
 plt.xlabel('Countries')
-plt.ylabel('Total Population')
-plt.title(' Total population of countries over the years')
+plt.ylabel('Population')
+plt.title('Total population of countries over the years')
+
+plt.legend()
+
+
+#Bar graph of annual freshwater withdrawals per country 
+water.T.iloc[:,1::2].plot(kind='bar', figsize=(15,15), width=0.8)
+
+plt.xlabel('Countries')
+plt.ylabel('Total fresh water withdrawals')
+plt.title('Totalfresh water withdrawals of countries over the years')
+
+plt.legend()
+
+
+#Line graph showing CO2 emmissions for countries over the years
+CO2.iloc[::].plot(kind='line', figsize=(15,15), linestyle=':', linewidth=4)
+plt.xlabel('Years')
+plt.ylabel('CO2 Emissions (kt)')
+plt.title(' CO2 Emissions over the years per Country')
 
 plt.legend(fontsize='large')
 plt.show()
 
 
-cy = pop.iloc[0]
-gh_pop = pop['Ghana']
-ng_pop = pop['Nigeria']
-alg_pop = pop.iloc[1]
-cd_pop = pop['Canada']
-us_pop = pop['United States']
-bz_pop = pop['Brazil']
-ar_pop = pop['Argentina']
-in_pop = pop['India']
-ch_pop = pop['China']
-kz_pop = pop['Kazakhstan']
-au_pop = pop['Australia']
-rs_pop = pop['Russia']
-kg_pop = pop['United Kingdom']
+#Line graph showing GDP for all countries over the years
+gdp.iloc[::].plot(kind='line', figsize=(15,15), linestyle=':', linewidth=4)
+plt.xlabel('Years')
+plt.ylabel('GDP (current US$)')
+plt.title(' GDP (US$) of all countries over the years')
+
+plt.legend(fontsize='large')
+plt.show()
+
 
 """
-gh_pop = pop['Ghana']
-ng_pop = pop['Nigeria']
-alg_pop = pop['Algeria']
-cd_pop = pop['Canada']
-us_pop = pop['United States']
-bz_pop = pop['Brazil']
-ar_pop = pop['Argentina']
-in_pop = pop['India']
-ch_pop = pop['China']
-kz_pop = pop['Kazakhstan']
-au_pop = pop['Australia']
-rs_pop = pop['Russia']
-kg_pop = pop['United Kingdom']
+Find the correlation of selected indicators for countries or regions
 """
-
-
-
-gh_co2 = CO2['Ghana']
-ng_co2 = CO2['Nigeria']
-alg_co2 = CO2['Algeria']
-cd_co2 = CO2['Canada']
-us_co2 = CO2['United States']
-bz_co2 = CO2['Brazil']
-ar_co2 = CO2['Argentina']
-in_co2 = CO2['India']
-ch_co2 = CO2['China']
-kz_co2 = CO2['Kazakhstan']
-au_co2 = CO2['Australia']
-rs_co2 = CO2['Russia']
-kg_co2 = CO2['United Kingdom']
-
-CO2_countries = np.array([gh_co2,ng_co2, alg_co2, cd_co2, us_co2, bz_co2, ar_co2, in_co2, ch_co2, kz_co2, au_co2, rs_co2, kg_co2])
-
-
-#print(CO2_countries)
-
 
 
 Ghana = df2.xs('Ghana', level=0, axis=1)
@@ -191,8 +162,7 @@ Asia = [China, India, Kazakhstan]
 
 
 
-Africa_arr = np.array(Africa)
-#print(Africa_arr)
+
 
 # Using statistical methods to explore the data
 print(st.kurtosis(Africa_arr))
@@ -204,65 +174,14 @@ print(pop.apply(skew))
 
 
 
-data_correlatioin = df2.corr()
-#print(data_correlatioin)
 
-
-# Plotting a line graph of CO2 emmissions for all countries
-"""
-plt.figure(figsize=(12,15))
-plt.plot(years, gh_co2, label='Ghana')
-plt.plot(years, ng_co2, label='Nigeria')
-plt.plot(years, alg_co2, label='Algeria')
-plt.plot(years, cd_co2, label='Canada')
-plt.plot(years, us_co2, label='US')
-plt.plot(years, bz_co2, label='Brazil')
-plt.plot(years, ar_co2, label='Argentina')
-plt.plot(years, in_co2, label='India')
-plt.plot(years, ch_co2, label='China')
-plt.plot(years, kz_co2, label='Kazakhstan')
-plt.plot(years, kg_co2, label='UK')
-
-plt.xlabel('Years')
-plt.ylabel('CO2 Emissions (kt)')
-plt.title(' CO2 Emissions over the years per Country')
-
-plt.legend(fontsize='large')
-plt.show()
-"""
-
-# Plotting a bar graph of Population of all countries
-
-plt.figure(figsize=(12,15))
+data_correlatioin = df2.corr() 
+#check correlation for indi for each country
+print(data_correlatioin)
 
 
 
-plt.xlabel('Countries')
-plt.ylabel('Total Population')
-plt.title(' Total population of countries over the years')
 
-plt.legend(fontsize='large')
-plt.show()
-
-
-
-#df2.iloc[1].rename(columns={'CO2 emissions (kt)': 'CO2 Ems', 'GDP (current US$)': 'GDP', 
-#                           'Annual freshwater withdrawals, total (% of internal resources)': 'Annual Freshwater',
-#                           'Forest area (% of land area)': 'Forest Area', 
- #                          'Renewable energy consumption (% of total final energy consumption)': 'Ren Energy Cons',
- #                          'Population, total': 'Population'},
-#                  inplace=True)
-
-
-
-"""
-#data_years['Series Name'].rename(columns={'CO2 emissions (kt)': 'CO2 Ems', 'GDP (current US$)': 'GDP', 
-                           'Annual freshwater withdrawals, total (% of internal resources)': 'Annual Freshwater',
-                           'Forest area (% of land area)': 'Forest Area', 
-                           'Renewable energy consumption (% of total final energy consumption)': 'Ren Energy Cons',
-                           'Population, total': 'Population'},
-                  inplace=True)
-"""
 
 
 
