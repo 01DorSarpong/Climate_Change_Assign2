@@ -16,11 +16,9 @@ This assignment is making use of statistical trends to analyse data
 # Importing the libraries
 import numpy as np
 import pandas as pd
-
 import matplotlib.pyplot as plt
 import stats as st
-from scipy.stats import skew
-from scipy.stats import kurtosis
+import seaborn as sns
 
 
 def read_data(file):
@@ -63,7 +61,14 @@ def read_data(file):
 df1, df2 = read_data('Climate_Data.csv')
 
 
-# Defining variables for my plots
+"""
+This section of the program uses statistical methods like describe(), skew() 
+and kurtosis() to explore the distributions of the indicators for selected 
+countries or regions.
+"""
+
+
+# Defining variables for my graphs and statistical analysis
 years = df2.index
 countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'US','Brazil',
              'Argentina', 'India', 'China', 'Kazakhstan','Australia',
@@ -71,17 +76,22 @@ countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'US','Brazil',
 
 
 # Creating dataframes for all the 6 series
-pop = df2.xs('Population, total', level=1, axis = 1)
-CO2 = df2.xs('CO2 emissions (kt)', level=1, axis = 1)
-gdp = df2.xs('GDP (current US$)', level=1, axis = 1)
-forest = df2.xs('Forest area (% of land area)', level=1, axis = 1)
+pop = df2.xs('Population, total', level=1, axis = 1).dropna()
+CO2 = df2.xs('CO2 emissions (kt)', level=1, axis = 1).dropna()
+gdp = df2.xs('GDP (current US$)', level=1, axis = 1).dropna()
+forest = df2.xs('Forest area (% of land area)', level=1, axis = 1).dropna()
 water = df2.xs('Annual freshwater withdrawals, total (% of internal resources)',
-             level=1, axis = 1)
+             level=1, axis = 1).dropna()
 renewable_egy = df2.xs('Renewable energy consumption (% of total final energy consumption)',
-             level=1, axis = 1)
+             level=1, axis = 1).dropna()
 
 
 
+# Using statistical methods to explore the data
+#print(st.kurtosis(Africa))
+#print(st.skew(Africa))
+#print(Ghana.describe())
+#print(st.skew(pop))
 """
 This part of the code plots different graphs to show the relationships between
 the different series and countries over the years. The first graph is a bar
@@ -96,8 +106,8 @@ pop.T.iloc[:,1::2].plot(kind='bar', figsize=(15,15), width=0.8)
 plt.xlabel('Countries')
 plt.ylabel('Population')
 plt.title('Total population of countries over the years')
-
 plt.legend()
+plt.savefig('Assign2_Pop_Bar_graph.png')
 
 
 #Bar graph of annual freshwater withdrawals per country 
@@ -106,78 +116,74 @@ water.T.iloc[:,1::2].plot(kind='bar', figsize=(15,15), width=0.8)
 plt.xlabel('Countries')
 plt.ylabel('Total fresh water withdrawals')
 plt.title('Totalfresh water withdrawals of countries over the years')
-
 plt.legend()
+plt.savefig('Assign2_Water_Bar_graph.png')
 
 
 #Line graph showing CO2 emmissions for countries over the years
 CO2.iloc[::].plot(kind='line', figsize=(15,15), linestyle=':', linewidth=4)
+
 plt.xlabel('Years')
 plt.ylabel('CO2 Emissions (kt)')
 plt.title(' CO2 Emissions over the years per Country')
-
 plt.legend(fontsize='large')
-plt.show()
+plt.savefig('Assign2_CO2_Line_graph.png')
 
 
 #Line graph showing GDP for all countries over the years
 gdp.iloc[::].plot(kind='line', figsize=(15,15), linestyle=':', linewidth=4)
+
 plt.xlabel('Years')
 plt.ylabel('GDP (current US$)')
 plt.title(' GDP (US$) of all countries over the years')
-
 plt.legend(fontsize='large')
+plt.savefig('Assign2_GDP_Line_graph.png')
+
 plt.show()
 
 
 """
-Find the correlation of selected indicators for countries or regions
+This part of the code explores the correlations between the countries on some
+ selected indicators. We will investigate correlations between CO2 emmissions
+ and GDP as well as Population and Forest Areas and Renewable energy.
 """
 
 
+
+#Creating a variable indicator that holds all the indicators in the data
+#indicators = pop, water, CO2, gdp, forest, renewable_egy
+
+
+#Creating a variable that contains the correlation of all the indicators
 Ghana = df2.xs('Ghana', level=0, axis=1)
-Nigeria = df2.xs('Nigeria', level=0, axis=1)
-Algeria = df2.xs('Algeria', level=0, axis=1)
+ghana_corr = Ghana.corr()
 
-Africa = [Ghana, Nigeria, Algeria]
 
-Canada = df2.xs('Canada', level=0, axis=1)
-Brazil = df2.xs('Brazil', level=0, axis=1)
-Argentina = df2.xs('Argentina', level=0, axis=1)
-US = df2.xs('United States', level=0, axis=1)
-
-Americas = [US, Brazil, Argentina, Canada]
-
-Uk = df2.xs('United Kingdom', level=0, axis=1)
-Australia = df2.xs('Australia', level=0, axis=1)
 Russia = df2.xs('Russia', level=0, axis=1)
+russia_corr = Russia.corr()
 
-Europe = [Uk, Brazil, Argentina, Canada]
-
-China = df2.xs('China', level=0, axis=1)
-India = df2.xs('India', level=0, axis=1)
-Kazakhstan = df2.xs('Kazakhstan', level=0, axis=1)
- 
-Asia = [China, India, Kazakhstan]
+sns.heatmap(ghana_corr, annot=True, cmap='hot', fmt='.2f')
+plt.title('Correlation Matrix for Ghana')
+plt.savefig('Assign2_GH_HeatMap.png')
+plt.show()
 
 
-
-
-
-# Using statistical methods to explore the data
-print(st.kurtosis(Africa_arr))
-print(st.skew(Africa_arr))
-print(Ghana.describe())
-print(pop.apply(skew))
+sns.heatmap(russia_corr, annot=True, cmap='bone', fmt='.2f')
+plt.title('Correlation Matrix for Russia')
+plt.savefig('Assign2_RS_HeatMap.png')
+plt.show()
 
 
 
 
 
 
-data_correlatioin = df2.corr() 
-#check correlation for indi for each country
-print(data_correlatioin)
+
+
+
+
+
+
 
 
 
