@@ -7,9 +7,9 @@ Created on Mon Nov 27 13:52:05 2023
 
 """
 This assignment is making use of statistical trends to analyse data 
- related to climate change. Countries selected was the top 10 largest 
- countries in the world and Ghana, Nigeria and the United Kingodm.The data will be
- expressed in 4 different graphs for the analysis.
+ related to climate change. Countries selected for the analyst were the top
+ 10 largest countries and in addittion Ghana, Nigeria and the United Kingodm.
+ The data will be expressed in 4 different graphs for the analysis.
 """
 
 
@@ -24,79 +24,96 @@ import seaborn as sns
 def read_data(file):
     
     """
-    This function takes in a file(csv) as a parameter and returns two 
-    dataframes of the file one with columns as years and the other
-    transposed with countries as years. 
+    This function takes in a csv file as a parameter and returns two
+     dataframes, one with columns as years and the other transposed with 
+     countries as years. 
     
     Parameter: 
         file: this is a CSV file read into the function
     """
-    # Read the World Bank databank format file
-    data = pd.read_csv(file, index_col = ['Country Name', 'Series Name'])
-    print(data)
-    
-    
-    df1 = data.drop(['Country Code', 'Series Code'], axis = 1)
-    # df1 = pd.pivot_table(data, index=['Country Name','Series Name'], dropna=True)
-      
    
-    df1.rename(columns={'1991 [YR1991]': '1991', '1992 [YR1992]':'1992', 
+    #Reading the CSV file and setting index as country name and series name
+    data = pd.read_csv(file, index_col = ['Country Name', 'Series Name'])
+    
+    #Removing the country code and series in the data and storing in dataframe1
+    df1 = data.drop(['Country Code', 'Series Code'], axis = 1)
+  
+    #Renaming the columns to remove years in [] 
+    df1.rename(columns = {'1991 [YR1991]': '1991', '1992 [YR1992]':'1992', 
     '1993 [YR1993]': '1993', '1994 [YR1994]':'1994', '1995 [YR1995]': '1995', 
     '1996 [YR1996]': '1996', '1997 [YR1997]':'1997', '1998 [YR1998]': '1998', 
-    '1999 [YR1999]': '1999', '2000 [YR2000]':'2000'}, inplace = True)
-    
-    
-    
-    
-               
+    '1999 [YR1999]': '1999', '2000 [YR2000]':'2000'}, inplace = True)           
    
-    df1['1991'] = pd.to_numeric(df1['1991'], errors='coerce')
-    df1['1992'] = pd.to_numeric(df1['1992'], errors='coerce')
+    #Changing the years 1991 and 1992 to numbers
+    df1['1991'] = pd.to_numeric(df1['1991'], errors = 'coerce')
+    df1['1992'] = pd.to_numeric(df1['1992'], errors = 'coerce')
     
-    
+    #Transposing the dataframe 1 and assigning to new dataframe 2
     df2 = df1.T
     
+    #The function returns the two dataframes df1 and df2
     return df1, df2
 
+
+#Calling the function with the climate_data csv file
 df1, df2 = read_data('Climate_Data.csv')
 
 
 """
-This section of the program uses statistical methods like describe(), skew() 
-and kurtosis() to explore the distributions of the indicators for selected 
+This section assigns and defines variables to be used in the graphical and
+ statistical analysis. 
+
+ methods like describe(), skew() and kurtosis() to explore the distributions of the indicators for selected 
 countries or regions.
 """
 
 
 # Defining variables for my graphs and statistical analysis
 years = df2.index
-countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'US','Brazil',
-             'Argentina', 'India', 'China', 'Kazakhstan','Australia',
-             'Russia', 'UK',]
+countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'US', 'Brazil',
+             'Argentina', 'India', 'China', 'Kazakhstan',' Australia', 'Russia',
+             'UK',]
 
+#Calling out some countries and storing in variables for analysis
+Ghana = df2.xs('Ghana', level=0, axis=1)
+UK = df2.xs('United Kingdom', level=0, axis=1)
+Russia = df2.xs('Russia', level=0, axis=1)
 
-# Creating dataframes for all the 6 series
-pop = df2.xs('Population, total', level=1, axis = 1).dropna()
-CO2 = df2.xs('CO2 emissions (kt)', level=1, axis = 1).dropna()
-gdp = df2.xs('GDP (current US$)', level=1, axis = 1).dropna()
-forest = df2.xs('Forest area (% of land area)', level=1, axis = 1).dropna()
+# Creating dataframes for all the 6 indicators
+pop = df2.xs('Population, total', level = 1, axis = 1).dropna()
+CO2 = df2.xs('CO2 emissions (kt)', level = 1, axis = 1).dropna()
+gdp = df2.xs('GDP (current US$)', level = 1, axis = 1).dropna()
+forest = df2.xs('Forest area (% of land area)', level = 1, axis = 1).dropna()
 water = df2.xs('Annual freshwater withdrawals, total (% of internal resources)',
-             level=1, axis = 1).dropna()
+             level = 1, axis = 1).dropna()
 renewable_egy = df2.xs('Renewable energy consumption (% of total final energy consumption)',
-             level=1, axis = 1).dropna()
+             level = 1, axis = 1).dropna()
+
+#Creating a new indicator gdp per capita as gdp divided by population
+gdp_per_capita = gdp/pop
+print(gdp_per_capita['United Kingdom'])
+print(renewable_egy)
+
+plt.figure()
+plt.scatter(gdp_per_capita, renewable_egy)
+plt.show()
 
 
+"""
+This section uses the kurtosis() and skew() functions in the stats.py file as 
+ well as the describe() function in pandas to explore the statistical
+ distributions of the data.
+"""
 
-# Using statistical methods to explore the data
-#print(st.kurtosis(Africa))
-#print(st.skew(Africa))
-#print(Ghana.describe())
-#print(st.skew(pop))
+print(st.kurtosis(renewable_egy))
+print(st.skew(Russia))
+print(Ghana.describe())
+
+
 """
 This part of the code plots different graphs to show the relationships between
-the different series and countries over the years. The first graph is a bar
-plot of the population series for all the countries over every 2 years
-
+ the different series and countries over the years. The graphs plotted are bar 
+ and line plots
 """
 
 
@@ -109,7 +126,6 @@ plt.title('Total population of countries over the years')
 plt.legend()
 plt.savefig('Assign2_Pop_Bar_graph.png')
 
-
 #Bar graph of annual freshwater withdrawals per country 
 water.T.iloc[:,1::2].plot(kind='bar', figsize=(15,15), width=0.8)
 
@@ -118,7 +134,6 @@ plt.ylabel('Total fresh water withdrawals')
 plt.title('Totalfresh water withdrawals of countries over the years')
 plt.legend()
 plt.savefig('Assign2_Water_Bar_graph.png')
-
 
 #Line graph showing CO2 emmissions for countries over the years
 CO2.iloc[::].plot(kind='line', figsize=(15,15), linestyle=':', linewidth=4)
