@@ -6,9 +6,9 @@ Created on Mon Nov 27 13:52:05 2023
 """
 
 """
-This assignment is making use of statistical trends to analyse data 
- related to climate change. Countries selected for the analyst were the top
- 10 largest countries and in addittion Ghana, Nigeria and the United Kingodm.
+This assignment is making use of statistical trends to analyse data related 
+ to climate change. Countries selected for the analyst were the top10 largest
+ countries and in addittion Ghana, Nigeria and the United Kingodm.
  The data will be expressed in 4 different graphs for the analysis.
 """
 
@@ -35,16 +35,15 @@ def read_data(file):
     #Reading the CSV file and setting index as country name and series name
     df1 = pd.read_csv(file, index_col=['Country Name', 'Series Name'])
     
-    #Changing the years 1991 and 1992 to numbers
-    df1['1991 [YR1991]'] = pd.to_numeric(df1['1991 [YR1991]'], errors = 'coerce')
-    df1['1992 [YR1992]'] = pd.to_numeric(df1['1992 [YR1992]'], errors = 'coerce')
+    #Removing the country code and series code in df1
+    df1 = df1.drop(['Country Code', 'Series Code'], axis = 1)
+
+    #Applying .to_numeric to change all values in the dataframe to floats
+    df1 = df1.apply(pd.to_numeric, errors = 'coerce')
     
     #Transposing the dataframe 1 and assigning to new dataframe 2
     df2 = df1.T
-        
-    #Cleaning df2 by removing country code and series code 
-    df2 = df2.drop(['Country Code', 'Series Code'], axis = 0)
-    
+         
     #Renaming the index to remove years in [] 
     df2.rename(index = {'1991 [YR1991]': '1991', '1992 [YR1992]':'1992', 
     '1993 [YR1993]': '1993', '1994 [YR1994]':'1994', '1995 [YR1995]': '1995', 
@@ -54,7 +53,6 @@ def read_data(file):
     #The function returns the two dataframes df1 and df2
     return df1, df2
     
-
 #Calling the function with the climate_data csv file
 df1, df2 = read_data('Climate_Data.csv')
 
@@ -66,17 +64,16 @@ This section assigns and defines variables to be used in the graphical and
  of the indicators for selected countries or regions.
 """
 
-
 # Defining variables for my graphs and statistical analysis
 years = df2.index
-countries = ['Ghana', 'Nigeria', 'Algeria', 'Canada', 'United States', 'Brazil',
-             'Argentina', 'India', 'China', 'Kazakhstan','Australia', 'Russia',
-             'United Kingdom',]
+countries = ['Algeria', 'Argentina', 'Australia', 'Brazil', 'Canada', 'China', 
+             'India', 'Kazakhstan', 'Russia', 'United States', 'Ghana', 
+             'United Kingdom']
 
 #Calling out some countries and storing in variables for analysis
-US = df2.xs('United States', level=0, axis=1)
-Ghana = df2.xs('Ghana', level=0, axis=1)
-China = df2.xs('China', level=0, axis=1)
+US = df2.xs('United States', level = 0, axis = 1)
+Ghana = df2.xs('Ghana', level = 0, axis = 1)
+China = df2.xs('China', level = 0, axis = 1)
 
 # Creating dataframes for all the 6 indicators
 pop = df2.xs('Population, total', level = 1, axis = 1).dropna()
@@ -97,10 +94,16 @@ This section uses the kurtosis() and skew() functions in the stats.py file as
  statistical distributions of the data.
 """
 
+#Using the describe function to explore the China data
 print(China.describe())
+
+#Using pandas to print skewness and kurtosis for all countries on indicators
+print(forest.skew())
+print(gdp.kurt())
+
+#Using the stats module to calculate the kurtosis for population and CO2
 print(st.kurtosis(pop))
 print(st.kurtosis(CO2))
-print(st.skew(forest))
 
 # Grouping the US dataframe by rainfall and calculaating the mean
 mean_rainfall = US.groupby('Annual freshwater withdrawals').mean()
@@ -169,13 +172,12 @@ countries. A heatmap is plotted to show the correlations of the indicators
 
 #Calling the .corr() function on the dataframe and storing in a new variable 
 df2_corr = df2.corr()
-us_corr = US.corr()
-gh_corr = Ghana.corr()
 
 #Creating a for loop that plots all the heatmaps for the countries
 for name in countries :
     plt.figure(figsize=(8, 6))
-    heatmap = sns.heatmap(df2_corr.loc[name,name], annot=True, cmap='hot', fmt='.2f')
+    heatmap = sns.heatmap(df2_corr.loc[name,name], annot=True, cmap='hot', 
+                        fmt='.2f')
     heatmap.set_xticklabels(heatmap.get_xticklabels(), fontsize=15)
     heatmap.set_yticklabels(heatmap.get_yticklabels(), fontsize=15)
     plt.title(name,fontsize=15)
